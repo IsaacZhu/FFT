@@ -5,11 +5,11 @@
 int main(){
 	int i;
 	FILE *fp;
-	fp=fopen("input.txt","a+");
+	fp=fopen("input.txt","w+");
 	srand(time(0));
 	printf("Making some random numbers...\n");
 	for (i=1;i<=128;++i){
-		fprintf(fp,"%d",(int)rand()%65535+1);
+		fprintf(fp,"%lf",rand()/(double)(RAND_MAX/100));
 		fprintf(fp,"\n");		
 	}
 	printf("Success!\n");
