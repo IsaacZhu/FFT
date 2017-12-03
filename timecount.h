@@ -40,6 +40,11 @@ void timeend(){
 	tusec2=tv.tv_usec;
 }
 
+double returntime(){
+	double timecount4;
+	timecount4=timecount2-timecount1;
+	return timecount4;
+}
 void outputtime(){
 	timecount3=timecount2-timecount1;
 	printf("runtime: %.20lfs\n",timecount3);

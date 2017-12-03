@@ -111,7 +111,7 @@ void Reverse_FFT(int N,complex y[],complex a[]){
 int main(){
 	int i,j,N,places,x,flag;
 	int scale[4]={4,16,32,60};
-	FILE *fp;
+	FILE *fp,*fpt;
 	fp=fopen("input.txt","r+");
 	for (i=0;i<64;++i){		//read A
 		fscanf(fp,"%lf",&A[i]);
@@ -123,7 +123,9 @@ int main(){
 	
 
 	fp=fopen("result.txt","w+");
-	fprintf(fp,"CALCULATION RESULT:\n");
+	fprintf(fp,"CALCULATION RESULT:\n\n");
+	fpt=fopen("time.txt","w+");
+	fprintf(fpt,"CALCULATION RESULT:\n");
 	printf("**************CALCULATION START...****************\n");
 	for (i=0;i<4;++i){
 
@@ -179,17 +181,22 @@ int main(){
 		for (j=0;j<2*N;++j) C[j]=ac[j].real/(2*N);
 		timeend();
 	
-		//print result to file
+		//print result to result.txt
 		fprintf(fp,"N is %d;result's coef is:\n",N);
 		for (j=0;j<2*N;++j){
 			fprintf(fp,"%lf ",C[j]);
 		}
-		fprintf(fp,"\n");
-		memset(C,0,128*sizeof(double));
+		fprintf(fp,"\n\n");
+		
 
-		printf("\nN is %d:\n",scale[i]);
+		//output time to time.txt
+		fprintf(fpt,"\nN:%d time is %.8lfs\n",N,returntime());
+		printf("\nN is %d:\n",N);
+
+		memset(C,0,128*sizeof(double));
 		outputtime();
 	}
 	printf("\n**************CALCULATION END**********************\n");
-	fclose(fp);	
+	fclose(fp);
+	fclose(fpt);	
 }
