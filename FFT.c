@@ -7,15 +7,18 @@
 #include <math.h>
 #include "timecount.h"
 
+#define maxsize 64
+#define dmsize 128	//double max size
+
 typedef struct complex{	//real+im*i
 	double real;
 	double im;
 }complex;
 
 
-double A[64],B[64],C[128];
-complex ya[128],yb[128],yc[128];  
-complex aa[128],ab[128],ac[128];
+double A[maxsize],B[maxsize],C[dmsize];
+complex ya[dmsize],yb[dmsize],yc[dmsize];  
+complex aa[dmsize],ab[dmsize],ac[dmsize];
 
 void complexadd(complex *result,complex a,complex b){
 	(*result).real=a.real+b.real;
@@ -57,7 +60,6 @@ void FFT(int N,complex a[],complex y[]){
 	complex y1[N/2];
 	FFT(N/2,a0,y0);
 	FFT(N/2,a1,y1);	
-	
 	for (i=0;i<=N/2-1;++i){
 		complexmul(&tmp,w,y1[i]);		//tmp=w*y1[i]		
 		complexadd(&y[i],y0[i],tmp);		//y[i]=y0[i]+w*y1[i]
@@ -109,14 +111,14 @@ void Reverse_FFT(int N,complex y[],complex a[]){
 }
 
 int main(){
-	int i,j,N,places,x,flag;
+	int i,j,N,places,x,flag,k;
 	int scale[4]={4,16,32,60};
 	FILE *fp,*fpt;
 	fp=fopen("input.txt","r+");
-	for (i=0;i<64;++i){		//read A
+	for (i=0;i<maxsize;++i){		//read A
 		fscanf(fp,"%lf",&A[i]);
 	}
-	for (i=0;i<64;++i){		//read B
+	for (i=0;i<maxsize;++i){		//read B
 		fscanf(fp,"%lf",&B[i]);
 	}	
 	fclose(fp);
@@ -130,6 +132,7 @@ int main(){
 	for (i=0;i<4;++i){
 
 		timestart();
+		//for (k=0;k<1000;++k){
 		x=scale[i];
 		places=0;
 		flag=0;
@@ -152,11 +155,10 @@ int main(){
 				ab[j].real=0;
 				ab[j].im=0;
 			}
-			FFT(N,aa,ya);			//DFT(A)
-			FFT(N,ab,yb);			//DFT(B)
+			FFT(2*N,aa,ya);			//DFT(A)
+			FFT(2*N,ab,yb);			//DFT(B)
 			Multiply(2*N);			//DFT(A)*DFT(B)
 			Reverse_FFT(2*N,yc,ac);		//C=REVERSE_DFT(DFT(A)*DFT(B))
-			for (j=0;j<2*N;++j) C[j]=ac[j].real/(2*N);
 		}
 		else{
 			N=scale[i];
@@ -179,6 +181,7 @@ int main(){
 			Reverse_FFT(2*N,yc,ac);		//C=REVERSE_DFT(DFT(A)*DFT(B))
 		}
 		for (j=0;j<2*N;++j) C[j]=ac[j].real/(2*N);
+		//}//k for
 		timeend();
 	
 		//print result to result.txt
@@ -193,7 +196,7 @@ int main(){
 		fprintf(fpt,"\nN:%d time is %.8lfs\n",N,returntime());
 		printf("\nN is %d:\n",N);
 
-		memset(C,0,128*sizeof(double));
+		memset(C,0,dmsize*sizeof(double));
 		outputtime();
 	}
 	printf("\n**************CALCULATION END**********************\n");
